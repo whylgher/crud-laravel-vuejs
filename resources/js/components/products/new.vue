@@ -154,6 +154,10 @@ export default {
                         price: '',
                     });
                     this.router.push('/');
+                    toast.fire({
+                        icon: 'success',
+                        title: 'Product add  succesfully'
+                    })
                 })
                 .catch((error) => {
 
