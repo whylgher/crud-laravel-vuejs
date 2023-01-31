@@ -81,10 +81,15 @@
     </div>
 </template>
 <script>
+
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 export default {
     data() {
         return {
+            selectedFile: null,
+            router: useRouter(),
             form: ref({
                 name: '',
                 description: '',
@@ -93,7 +98,6 @@ export default {
                 quantity: '',
                 price: '',
             }),
-            selectedFile: null,
         }
     },
     methods: {
@@ -135,9 +139,21 @@ export default {
             formData.append('quantity', this.form.quantity)
             formData.append('price', this.form.price)
 
-            axios.post("/api/v1/product", formData)
+            axios.post("/api/v1/product", formData, {
+                onUploadProgress: uploadEvent => {
+                    console.log('Upload Progress: ' + Math.round(uploadEvent.loaded / uploadEvent.total * 100) + '%')
+                }
+            })
                 .then((response) => {
-
+                    this.form = ref({
+                        name: '',
+                        description: '',
+                        photo: '',
+                        type: '',
+                        quantity: '',
+                        price: '',
+                    });
+                    this.router.push('/');
                 })
                 .catch((error) => {
 
