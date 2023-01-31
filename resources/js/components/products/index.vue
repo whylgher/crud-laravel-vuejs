@@ -64,30 +64,34 @@
 
 <script>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 
 export default {
     name: 'App',
     data() {
         return {
-            products: ref([])
+            products: ref([]),
+            router: useRouter()
         }
     },
 
     mounted() {
-        this.GetAllProducts()
+        this.getAllProducts()
     },
     methods: {
-        GetAllProducts() {
-            var page = '/api/get_all_product';
+        getAllProducts() {
+            var page = '/api/v1/product';
             axios.get(page)
                 .then(
                     ({ data }) => {
                         this.products = data['products'];
                     }
                 )
+        },
+        newProduct() {
+            this.router.push('/product/new');
         }
-
-
     }
 
 }
