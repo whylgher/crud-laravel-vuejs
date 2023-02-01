@@ -28,7 +28,7 @@
                             <ul class="products__create__main--media--images--list list-unstyled">
                                 <li class="products__create__main--media--images--item">
                                     <div class="products__create__main--media--images--item--imgWrapper">
-                                        <img class="products__create__main--media--images--item--img" :src="getPhoto()" alt="" />
+                                        <img class="products__create__main--media--images--item--img" v-bind:src="form.photo" alt="" />
                                     </div>
                                 </li>
                                 <!-- upload image small -->
@@ -86,6 +86,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
+    props: ['id'],
     data() {
         return {
             selectedFile: null,
@@ -99,14 +100,38 @@ export default {
                 price: '',
                 selectedFile: null,
             }),
+            router: useRouter(),
         }
     },
+    mounted() {
+        this.getItem();
+    },
     methods: {
+        getItem() {
+            var page = `/api/v1/product/${this.id}`;
+            axios.get(page)
+                .then(
+                    ({ data }) => {
+                        console.log(data['product'])
+                        this.form = ref({
+                            name: data['product']['name'],
+                            description: data['product']['description'],
+                            photo: data['product']['photo'],
+                            type: data['product']['type'],
+                            quantity: data['product']['quantity'],
+                            price: data['product']['price'],
+                            photo: 'http://localhost:8000/' + data['product']['photo'],
+                        });
+                    }
+                ).catch(
+                    (errors) => {
+                        console.log(errors)
+                    })
+        },
         onFileSelected(event) {
             this.selectedFile = event.target.files[0];
             this.form.selectedFile = event.target.files[0];
             this.updatePhoto(event);
-            console.log(this.selectedFile)
         },
         getPhoto() {
             let photo = "/upload/image.png";
@@ -133,29 +158,24 @@ export default {
             reader.readAsDataURL(file);
         },
         saveProduct() {
-            let formData = {
-                'name': this.form.name,
-                'description': this.form.description,
-                'photo': this.selectedFile,
-                'type': this.form.type,
-                'quantity': this.form.quantity,
-                'price': this.form.price,
-            }
-
-            let formDataa = new FormData();
-            formDataa.append('name', this.form.name);
-            formDataa.append('description', this.form.description);
-            formDataa.append('photo', this.selectedFile);
-            formDataa.append('type', this.form.type);
-            formDataa.append('quantity', this.form.quantity);
-            formDataa.append('price', this.form.price);
+            let formData = new FormData();
+            formData.append('name', this.form.name);
+            formData.append('description', this.form.description);
+            formData.append('photo', this.selectedFile);
+            formData.append('type', this.form.type);
+            formData.append('quantity', this.form.quantity);
+            formData.append('price', this.form.price);
+            formData.append('_method', 'put');
 
             const config = {
-                headers: { 'content-type': 'multipart/form-data' }
+                onUploadProgress: uploadEvent => {
+                    console.log('Upload Progress: ' + Math.round(uploadEvent.loaded / uploadEvent.total * 100) + '%')
+                }
             }
 
-            axios.put('api/v1/product/' + this.id, formDataa, config)
+            axios.post('/api/v1/product/' + this.id, formData, config)
                 .then(response => {
+                    this.router.push('/');
                 }).catch(errors => {
                     console.log(errors)
                 }).finally(() => {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
 
 class ProductController extends Controller
@@ -30,7 +31,6 @@ class ProductController extends Controller
         if ($photo) {
             $name = 'product_' . time() . '.' . $photo->getClientOriginalExtension();
             $request->photo->storeAs('public/upload', $name);
-            // $urlPhoto = URL::asset('storage/upload/' . $name);
             $urlPhoto = 'storage/upload/' . $name;
         }
 
@@ -52,16 +52,28 @@ class ProductController extends Controller
         Request $request,
         Product $product,
     ) {
-        dd($request->all(), $product);
-
         $photo = $request->photo;
-        if ($photo) {
+        $urlPhoto = '';
+        if ($photo && $photo != 'null') {
             $name = 'product_' . time() . '.' . $photo->getClientOriginalExtension();
             $request->photo->storeAs('public/upload', $name);
-            $urlPhoto = URL::asset('storage/upload/' . $name);
-        }
+            $urlPhoto = 'storage/upload/' . $name;
 
-        $product->update($request->all());
+            $old_photo = $product->photo;
+            if (File::exists($old_photo)) {
+                File::delete($old_photo);
+            }
+        } else {
+            $urlPhoto = $product->photo;
+        }
+        $product->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'photo' => $urlPhoto,
+            'type' => $request->type,
+            'quantity' => $request->quantity,
+            'price' => $request->price,
+        ]);
         return response()->json("Skill updated");
     }
 }
