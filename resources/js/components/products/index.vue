@@ -44,7 +44,7 @@
                     {{ item.quantity }}
                 </p>
                 <div>
-                    <button class="btn-icon btn-icon-success">
+                    <button class="btn-icon btn-icon-success" @click="editProduct(item.id)">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
                     <button class="btn-icon btn-icon-danger">
@@ -91,7 +91,10 @@ export default {
         },
         newProduct() {
             this.router.push('/product/new');
-        }
+        },
+        editProduct(id) {
+            this.router.push('/product/edit/' + id);
+        },
     }
 
 }

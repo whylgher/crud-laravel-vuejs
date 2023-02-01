@@ -17,12 +17,22 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function show(Product $product)
+    {
+        return response()->json([
+            'product' => $product
+        ], 200);
+    }
+
     public function store(Request $request)
     {
         $photo = $request->photo;
-        $name = 'product_' . time() . '.' . $photo->getClientOriginalExtension();
-        $request->photo->storeAs('public/upload', $name);
-        $urlPhoto = URL::asset('storage/upload/' . $name);
+        if ($photo) {
+            $name = 'product_' . time() . '.' . $photo->getClientOriginalExtension();
+            $request->photo->storeAs('public/upload', $name);
+            // $urlPhoto = URL::asset('storage/upload/' . $name);
+            $urlPhoto = 'storage/upload/' . $name;
+        }
 
         $product = Product::create([
             'name' => $request->name,
@@ -36,5 +46,22 @@ class ProductController extends Controller
         return response()->json([
             'product' => $product
         ], 200);
+    }
+
+    public function update(
+        Request $request,
+        Product $product,
+    ) {
+        dd($request->all(), $product);
+
+        $photo = $request->photo;
+        if ($photo) {
+            $name = 'product_' . time() . '.' . $photo->getClientOriginalExtension();
+            $request->photo->storeAs('public/upload', $name);
+            $urlPhoto = URL::asset('storage/upload/' . $name);
+        }
+
+        $product->update($request->all());
+        return response()->json("Skill updated");
     }
 }

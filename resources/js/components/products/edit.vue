@@ -5,7 +5,7 @@
              <div class="products__create__titlebar dflex justify-content-between align-items-center">
                  <div class="products__create__titlebar--item">
 
-                     <h1 class="my-1">Add Product</h1>
+                     <h1 class="my-1">Edit Product</h1>
                  </div>
                  <div class="products__create__titlebar--item">
 
@@ -97,12 +97,14 @@ export default {
                 type: '',
                 quantity: '',
                 price: '',
+                selectedFile: null,
             }),
         }
     },
     methods: {
         onFileSelected(event) {
             this.selectedFile = event.target.files[0];
+            this.form.selectedFile = event.target.files[0];
             this.updatePhoto(event);
             console.log(this.selectedFile)
         },
@@ -131,37 +133,34 @@ export default {
             reader.readAsDataURL(file);
         },
         saveProduct() {
-            const formData = new FormData();
-            formData.append('name', this.form.name);
-            formData.append('description', this.form.description);
-            formData.append('photo', this.selectedFile);
-            formData.append('type', this.form.type);
-            formData.append('quantity', this.form.quantity);
-            formData.append('price', this.form.price);
+            let formData = {
+                'name': this.form.name,
+                'description': this.form.description,
+                'photo': this.selectedFile,
+                'type': this.form.type,
+                'quantity': this.form.quantity,
+                'price': this.form.price,
+            }
 
-            axios.post("/api/v1/product", formData, {
-                onUploadProgress: uploadEvent => {
-                    console.log('Upload Progress: ' + Math.round(uploadEvent.loaded / uploadEvent.total * 100) + '%')
-                }
-            })
-                .then((response) => {
-                    this.form = ref({
-                        name: '',
-                        description: '',
-                        photo: '',
-                        type: '',
-                        quantity: '',
-                        price: '',
-                    });
-                    this.router.push('/');
-                    toast.fire({
-                        icon: 'success',
-                        title: 'Product add  successfully'
-                    })
-                })
-                .catch((error) => {
+            let formDataa = new FormData();
+            formDataa.append('name', this.form.name);
+            formDataa.append('description', this.form.description);
+            formDataa.append('photo', this.selectedFile);
+            formDataa.append('type', this.form.type);
+            formDataa.append('quantity', this.form.quantity);
+            formDataa.append('price', this.form.price);
 
-                })
+            const config = {
+                headers: { 'content-type': 'multipart/form-data' }
+            }
+
+            axios.put('api/v1/product/' + this.id, formDataa, config)
+                .then(response => {
+                }).catch(errors => {
+                    console.log(errors)
+                }).finally(() => {
+                });
+
         },
     },
 
