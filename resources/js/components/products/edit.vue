@@ -176,6 +176,10 @@ export default {
             axios.post('/api/v1/product/' + this.id, formData, config)
                 .then(response => {
                     this.router.push('/');
+                    toast.fire({
+                        icon: 'success',
+                        title: 'Product edited successfully'
+                    })
                 }).catch(errors => {
                     console.log(errors)
                 }).finally(() => {

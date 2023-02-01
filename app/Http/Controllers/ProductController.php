@@ -74,6 +74,18 @@ class ProductController extends Controller
             'quantity' => $request->quantity,
             'price' => $request->price,
         ]);
-        return response()->json("Skill updated");
+        return response()->json("Product updated");
+    }
+
+    public function destroy(Product $product)
+    {
+        $photo = $product->photo;
+        if (File::exists($photo)) {
+            File::delete($photo);
+        };
+
+        $product->delete();
+
+        return response()->json("Product delete");
     }
 }

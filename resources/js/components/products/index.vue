@@ -47,7 +47,7 @@
                     <button class="btn-icon btn-icon-success" @click="editProduct(item.id)">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button class="btn-icon btn-icon-danger">
+                    <button class="btn-icon btn-icon-danger" @click="deleteProduct(item.id)">
                         <i class="far fa-trash-alt"></i>
                     </button>
                 </div>
@@ -94,6 +94,32 @@ export default {
         },
         editProduct(id) {
             this.router.push('/product/edit/' + id);
+        },
+        deleteProduct(id) {
+            var page = `/api/v1/product/${id}`;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You can't go back",
+                icon: 'warnind',
+                showCancelButton: true,
+                confirmButtonColor: "#3085D6",
+                cancelButtonColor: "#D33",
+                confirmButtonText: 'Yes, delet it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete(page)
+                    .then(
+                        ({ data }) => {
+                            this.getAllProducts();
+                            toast.fire({
+                                icon: 'success',
+                                title: 'Product deleted successfully'
+                            })
+                        }
+                    )
+                }
+            })
+
         },
     }
 
