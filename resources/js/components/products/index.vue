@@ -97,17 +97,29 @@ export default {
         },
         deleteProduct(id) {
             var page = `/api/v1/product/${id}`;
-            axios.delete(page)
-                .then(
-                    ({ data }) => {
-                        this.getAllProducts();
-                        toast.fire({
-                            icon: 'success',
-                            title: 'Product deleted successfully'
-                        })
-                    }
-                )
-            this.router.push('/');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You can't go back",
+                icon: 'warnind',
+                showCancelButton: true,
+                confirmButtonColor: "#3085D6",
+                cancelButtonColor: "#D33",
+                confirmButtonText: 'Yes, delet it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete(page)
+                    .then(
+                        ({ data }) => {
+                            this.getAllProducts();
+                            toast.fire({
+                                icon: 'success',
+                                title: 'Product deleted successfully'
+                            })
+                        }
+                    )
+                }
+            })
+
         },
     }
 
