@@ -47,7 +47,7 @@
                     <button class="btn-icon btn-icon-success" @click="editProduct(item.id)">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button class="btn-icon btn-icon-danger">
+                    <button class="btn-icon btn-icon-danger" @click="deleteProduct(item.id)">
                         <i class="far fa-trash-alt"></i>
                     </button>
                 </div>
@@ -94,6 +94,20 @@ export default {
         },
         editProduct(id) {
             this.router.push('/product/edit/' + id);
+        },
+        deleteProduct(id) {
+            var page = `/api/v1/product/${id}`;
+            axios.delete(page)
+                .then(
+                    ({ data }) => {
+                        this.getAllProducts();
+                        toast.fire({
+                            icon: 'success',
+                            title: 'Product deleted successfully'
+                        })
+                    }
+                )
+            this.router.push('/');
         },
     }
 
