@@ -108,18 +108,17 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     axios.delete(page)
-                    .then(
-                        ({ data }) => {
-                            this.getAllProducts();
-                            toast.fire({
-                                icon: 'success',
-                                title: 'Product deleted successfully'
-                            })
-                        }
-                    )
+                        .then(
+                            ({ data }) => {
+                                this.getAllProducts();
+                                toast.fire({
+                                    icon: 'success',
+                                    title: 'Product deleted successfully'
+                                })
+                            }
+                        )
                 }
             })
-
         },
     }
 
